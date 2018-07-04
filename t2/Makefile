@@ -4,6 +4,7 @@ all:
 	@echo "MAKEFILES=$(MAKEFILES)"
 	@echo "MAKEFLAGS=$(MAKEFLAGS)"
 	@echo "LOCAL_VAR=$(LOCAL_VAR)"
+	@echo "MAKELEVEL=$(MAKELEVEL)"
 	@echo "CHIP=$(CHIP)"
 	@echo "t2 build done"
 
