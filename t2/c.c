@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-void func3(void)
+int add(int a, int b)
 {
-		printf("i am func3\n");
+	printf("i am add\n");
+	return a+b;
 }
 

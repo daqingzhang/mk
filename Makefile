@@ -1,94 +1,49 @@
-OBJS	:=$(strip $(patsubst %.c, %.o, $(wildcard *.c)))
-TGT		:=test
-CC		:=gcc
 
-#####################################################
-ifeq (0,$(MAKELEVEL))
-TOPDIR	:=$(CURDIR)
-#TOPDIR	:=$(shell pwd)
+ifeq ($(MAKELEVEL),0)
+TOPDIR	:= $(CURDIR)
 else
-TOPDIR	:=$(shell pwd)
+TOPDIR	:= ./
 endif
 
+export TOPDIR
 
-##varible is replaced where it is defined
-#####################################################
-FLAG	:=$(INC) -O2
-INC		:=-It1 -It2
+include $(TOPDIR)/config.mk
 
-##varible is replaced where it is used
-####################################################
-FLAG1	=$(INC1) -O2
-INC1	=-It1 -It2
+SUBDIR	:= $(TOPDIR)/$(LIB1DIR)
+SUBDIR	+= $(TOPDIR)/$(LIB2DIR)
 
-####################################################
-ifeq (undefined, $(origin HELLO))
-HELLO := hello
-endif
-
-ifeq ($(HELLO),hello)
-HELLO := hello2
-endif
-
-ifdef HELLO
-HELLO	+= world
-else
-HELLO	:= world
-endif
-####################################################
-
-include config.mk
-
-SUBDIRS	:= t1 t2
-
-.PHONY: clean sub-make $(SUBDIRS)
-
-export MAKEFILES=helloworld
-export MAKEFLAGS=abc
-export LOCAL_VAR=def
-
-define func
-	@echo "$(0)"
-	@echo "$(1)+$(2)+$(3)=$($(1)+$(2))"
+define sub-make
+	for i in $(SUBDIR); do \
+		$(MAKE) -C $$i; \
+	done;
 endef
 
-all: $(TGT)
-	$(call func,a,b,c)
+define sub-clean
+	for i in $(SUBDIR); do \
+	$(MAKE) -C $$i clean; \
+	done;
+endef
 
-$(TGT): $(OBJS) sub-make
-	$(CC) -o $@ $<
-	$(ECHO) "DDD=$(?)"
-	$(ECHO) "CURDIR=$(CURDIR)"
-	$(ECHO) "MAKE=$(MAKE)"
-	$(ECHO) "MAKEFLAGS=$(MAKEFLAGS)"
-	$(ECHO) "MAKEFILES=$(MAKEFILES)"
-	$(ECHO) "MAKEFILE_LIST=$(MAKEFILE_LIST)"
-	$(ECHO) "TTT=$(TTT)"
-	$(ECHO) "LOCAL_VAR=$(LOCAL_VAR)"
-	@echo "MAKELEVEL=$(MAKELEVEL)"
-	@echo "TOPDIR=$(TOPDIR)"
-	@echo "FLAG=$(FLAG)"
-	@echo "FLAG1=$(FLAG1)"
-	@echo "HELLO=$(HELLO)"
-	$(ECHO) "compile done"
+OBJS	:=$(patsubst %.c,%.o,$(wildcard *.c))
 
-sub-make: $(SUBDIRS)
+CFLAGS	:= -I$(TOPDIR)/$(LIB1DIR) -I$(TOPDIR)/$(LIB2DIR)
+CFLAGS	+= $(PLATFORM-CFLAGS)
+LDFLAGS	:= -L$(TOPDIR)/$(LIB1DIR) -L$(TOPDIR)/$(LIB2DIR)
 
-$(SUBDIRS):
-	$(MAKE) -C $@
+all: libs $(APP)
+	@echo "make done !"
 
-#t1: t2
+$(APP): $(OBJS)
+	$(CC) $(LDFLAGS) -o $@ $^ -la -lb
 
 %.o: %.c
-	$(CC) -c -g -o $@ $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
-define clean-subdirs
-	@for dirs in $(SUBDIRS); do \
-	$(MAKE) -C $$dirs clean; \
-	done;
-	@echo "clean $(SUBDIRS) done";
-endef
+libs:
+	$(call sub-make)
+
+.PHONY:	clean libs $(LIB1DIR) $(LIB2DIR)
 
 clean:
-	$(clean-subdirs)
-	rm -rf $(OBJS) $(TGT)
+	rm -rf *.o $(APP)
+	$(call sub-clean)

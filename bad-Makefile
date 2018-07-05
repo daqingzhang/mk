@@ -1,0 +1,92 @@
+OBJS	:=$(strip $(patsubst %.c, %.o, $(wildcard *.c)))
+TGT		:=test
+CC		:=gcc
+
+#####################################################
+ifeq (0,$(MAKELEVEL))
+TOPDIR	:=$(CURDIR)
+#TOPDIR	:=$(shell pwd)
+else
+TOPDIR	:=$(shell pwd)
+endif
+
+
+##varible is replaced where it is defined
+#####################################################
+FLAG	:=$(INC) -O2
+INC		:=-It1 -It2
+
+##varible is replaced where it is used
+####################################################
+FLAG1	=$(INC1) -O2
+INC1	=-It1 -It2
+
+####################################################
+ifeq (undefined, $(origin HELLO))
+HELLO := hello
+endif
+
+ifeq ($(HELLO),hello)
+HELLO := hello2
+endif
+
+ifdef HELLO
+HELLO	+= world
+else
+HELLO	:= world
+endif
+####################################################
+
+include config.mk
+
+SUBDIRS	:= t1
+
+.PHONY: clean $(SUBDIRS)
+
+export MAKEFILES=helloworld
+export MAKEFLAGS=abc
+export LOCAL_VAR=def
+
+define func
+	@echo "$(0)"
+	@echo "$(1)+$(2)+$(3)=$($(1)+$(2))"
+endef
+
+all: sub-tgt
+	#$(call func,a,b,c)
+
+$(TGT):
+	#$(CC) -o $@ $<
+	#$(ECHO) "DDD=$(?)"
+	#$(ECHO) "CURDIR=$(CURDIR)"
+	#$(ECHO) "MAKE=$(MAKE)"
+	#$(ECHO) "MAKEFLAGS=$(MAKEFLAGS)"
+	#$(ECHO) "MAKEFILES=$(MAKEFILES)"
+	#$(ECHO) "MAKEFILE_LIST=$(MAKEFILE_LIST)"
+	#$(ECHO) "TTT=$(TTT)"
+	#$(ECHO) "LOCAL_VAR=$(LOCAL_VAR)"
+	#@echo "MAKELEVEL=$(MAKELEVEL)"
+	#@echo "TOPDIR=$(TOPDIR)"
+	#@echo "FLAG=$(FLAG)"
+	#@echo "FLAG1=$(FLAG1)"
+	#@echo "HELLO=$(HELLO)"
+	@echo "compile done"
+
+sub-tgt: $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@
+
+%.o: %.c
+	$(CC) -c -g -o $@ $<
+
+define clean-subdirs
+	@for dirs in $(SUBDIRS); do \
+	$(MAKE) -C $$dirs clean; \
+	done;
+	@echo "clean $(SUBDIRS) done";
+endef
+
+clean:
+	$(clean-subdirs)
+	rm -rf $(OBJS) $(TGT)

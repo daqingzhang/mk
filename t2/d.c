@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-void func4(void)
+int sub(int a, int b)
 {
-		printf("i am func4\n");
+		printf("i am sub\n");
+		return a-b;
 }
 

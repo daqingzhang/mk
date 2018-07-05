@@ -2,5 +2,5 @@
 
 void func2(void)
 {
-		printf("i am func2\n");
+	printf("i am func2\n");
 }

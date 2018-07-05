@@ -1,19 +1,31 @@
-objs	:= $(strip $(patsubst %.c, %.o, $(wildcard *.c)))
+OBJS	:= $(strip $(patsubst %.c, %.o, $(wildcard *.c)))
+INCS	:= $(TOPDIR)/inc
 
-all: $(objs)
+sinclude $(TOPDIR)/config.mk
+
+LIBS	:= $(LIB1)
+CFLAGS	:= -I$(INCS) -I$(CURDIR)
+CFLAGS	+= $(PLATFORM-CFLAGS)
+
+
+define show-var
 	@echo "CURDIR=$(CURDIR)"
-	@echo "MAKEFILES=$(MAKEFILES)"
-	@echo "MAKEFLAGS=$(MAKEFLAGS)"
-	@echo "LOCAL_VAR=$(LOCAL_VAR)"
+	@echo "TOPDIR=$(TOPDIR)"
 	@echo "MAKELEVEL=$(MAKELEVEL)"
-	@echo "$(objs)"
-	@echo "t1 build done"
+endef
+
+all: $(LIBS)
+	$(call show-var)
+	@echo "$(LIBS) build done"
+
+$(LIBS): $(OBJS)
+	$(AR) -rv $@ $^
 
 %.o: %.c
-	gcc -c -o $@ $<
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: clean
+.PHONY: clean all
 
 clean:
-	rm -f $(objs)
-	@echo "t1 clean done"
+	rm -f $(OBJS) $(LIBS)
+	@echo "clean done"
