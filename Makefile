@@ -44,6 +44,10 @@ libs:
 
 .PHONY:	clean libs $(LIB1DIR) $(LIB2DIR)
 
-clean:
+clean-test:
 	rm -rf *.o $(APP)
+clean-libs:
 	$(call sub-clean)
+
+clean: clean-test clean-libs
+	@echo "clean done !"

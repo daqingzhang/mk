@@ -1,3 +1,7 @@
+ifeq ($(TOPDIR),)
+TOPDIR	:= $(CURDIR)/../
+endif
+
 OBJS	:= $(strip $(patsubst %.c, %.o, $(wildcard *.c)))
 INCS	:= $(TOPDIR)/inc
 
