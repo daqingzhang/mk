@@ -3,6 +3,7 @@ TOPDIR	:= $(CURDIR)/../
 endif
 
 OBJS	:= $(strip $(patsubst %.c, %.o, $(wildcard *.c)))
+DEPS	:= $(strip $(patsubst %.c, %.d, $(wildcard *.c)))
 INCS	:= $(TOPDIR)/inc
 
 sinclude $(TOPDIR)/config.mk
@@ -19,7 +20,7 @@ define show-var
 endef
 
 all: $(LIBS)
-	$(call show-var)
+	$(show-var)
 	@echo "$(LIBS) build done"
 
 $(LIBS): $(OBJS)
@@ -28,8 +29,11 @@ $(LIBS): $(OBJS)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
+%.d: %.c
+	$(CC) $(CFLAGS) -M $< > $@
+
 .PHONY: clean all
 
 clean:
-	rm -f $(OBJS) $(LIBS)
+	rm -f $(OBJS) $(LIBS) $(DEPS)
 	@echo "clean done"

@@ -42,7 +42,7 @@ $(APP): $(OBJS)
 libs:
 	$(call sub-make)
 
-.PHONY:	clean libs $(LIB1DIR) $(LIB2DIR)
+.PHONY:	clean clean-test clean-libs libs all
 
 clean-test:
 	rm -rf *.o $(APP)
