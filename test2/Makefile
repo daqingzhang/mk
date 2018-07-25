@@ -13,10 +13,59 @@ else
 ECHO	:=@\#
 endif
 
-all: main
+####################################################
+
+# $(subst from,to,text)
+# $(findstring find,in)
+# $(filter patern, text)
+
+
+# $(foreach var, list, text)
+#-------------------------------------------
+# for(i = 0; i < length(list);i++)
+#	var = list[i];
+#	text();
+############################################
+
+STAR	:=helloworld
+STAR2	:=$(subst l,m,$(STAR))
+STAR3	:=$(findstring world, $(STAR))
+
+STAR4	:=a.c b.c c.o d.o
+STAR5	:=$(filter %.c, $(STAR4))
+STAR6	:=$(foreach f,$(STAR4),$(f)-)
+STAR7	:=$(shell cat test.h)
+
+ifeq (1,1)
+$(info "information")
+else
+$(error "it's error")
+endif
+
+####################################################
+# func($1,$2)
+#-------------------------------------------
+define func
+	@echo "param1: $1"
+	@echo "param2: $2"
+endef
+####################################################
+
+all: main test
 
 main: $(OBJS)
 	gcc $(LDFLAGS) -o $@ $^
+
+test:
+	@echo "$(STAR)"
+	@echo "$(STAR2)"
+	@echo "$(STAR3)"
+	@echo "$(STAR5)"
+	@echo "$(STAR6)"
+	$(call func,abc,def)
+	@echo "$(origin STAR)"
+	@echo "$(origin STARX)"
+	@echo "$(STAR7)"
 
 %.d: %.c
 	$(ECHO) "CC $@"
@@ -28,6 +77,17 @@ main: $(OBJS)
 	$(ECHO) "CC $@"
 	gcc $(CCFLAGS) -c $< -o $@
 
-.PHONY: clean all
+.PHONY: clean all tags tar install
+
 clean:
 	rm -rf *.o *.d main
+
+tags:
+	ctags -R
+
+tar:
+	tar -cvjf test.tar.bz2 *
+
+install:
+	mkdir -p bin
+	cp -rp main bin/
