@@ -1,5 +1,5 @@
 ifeq ($(MAKELEVEL),0)
-TOPDIR	:=./..
+TOPDIR	:=$(CURDIR)/..
 endif
 
 SRCS	:= $(wildcard *.c)

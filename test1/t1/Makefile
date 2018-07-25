@@ -1,5 +1,5 @@
 ifeq ($(TOPDIR),)
-TOPDIR	:= $(CURDIR)/../
+TOPDIR	:= $(CURDIR)/..
 endif
 
 OBJS	:= $(strip $(patsubst %.c, %.o, $(wildcard *.c)))
