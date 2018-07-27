@@ -5,7 +5,7 @@ DEPS	:= $(OBJS:.o=.d)
 CCFLAGS := -I./ -O0 -g -Werror -Wall
 LDFLAGS := -g
 
-V	?=0
+V	?=1
 
 ifeq ($(V),1)
 ECHO	:=@echo
@@ -36,10 +36,13 @@ STAR5	:=$(filter %.c, $(STAR4))
 STAR6	:=$(foreach f,$(STAR4),$(f)-)
 STAR7	:=$(shell cat test.h)
 
+STAR8	:=./out/a
+STAR8	:=$(shell mkdir -p $(STAR8) && cd $(STAR8) && /bin/pwd)
+
 ifeq (1,1)
-$(info "information")
+$(info information)
 else
-$(error "it's error")
+$(error err occur)
 endif
 
 ####################################################
@@ -51,7 +54,7 @@ define func
 endef
 ####################################################
 
-all: main test
+all: main
 
 main: $(OBJS)
 	gcc $(LDFLAGS) -o $@ $^
@@ -66,6 +69,7 @@ test:
 	@echo "$(origin STAR)"
 	@echo "$(origin STARX)"
 	@echo "$(STAR7)"
+	@echo "$(STAR8)"
 
 %.d: %.c
 	$(ECHO) "CC $@"
@@ -73,7 +77,7 @@ test:
 
 -include $(DEPS)
 
-%.o: %.c
+%.o: %.c %.d
 	$(ECHO) "CC $@"
 	gcc $(CCFLAGS) -c $< -o $@
 
