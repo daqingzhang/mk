@@ -32,7 +32,6 @@ LDFLAGS	:= -L$(TOPDIR)/$(LIB1DIR) -L$(TOPDIR)/$(LIB2DIR)
 
 all: libs $(APP)
 	@echo ""
-	$(shell env)
 	@echo ""
 	@echo "make done !"
 
